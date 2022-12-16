@@ -26,7 +26,6 @@ class CitasScreen extends StatelessWidget {
           future: fetchPacientes(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              // Obtener el paciente con el ID del paciente
               Paciente paciente = snapshot.data!
                   .firstWhere((paciente) => paciente.id == pacienteId);
               return Text('${paciente.nombre} ${paciente.apellido}');
@@ -37,6 +36,38 @@ class CitasScreen extends StatelessWidget {
           },
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () async {
+              bool? confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Eliminar paciente'),
+                    content: const Text(
+                        '¿Estás seguro de que quieres eliminar este paciente?'),
+                    actions: [
+                      TextButton(
+                        child: const Text('No'),
+                        onPressed: () => Navigator.pop(context, false),
+                      ),
+                      TextButton(
+                        child: const Text('Sí'),
+                        onPressed: () => Navigator.pop(context, true),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirm != null) {
+                deletePaciente(pacienteId);
+                Navigator.pop(context, true);
+              }
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Cita>>(
         future: _citasFuture,

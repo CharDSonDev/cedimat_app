@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:cedimat_app/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import '../../Networking/cita.dart';
 
 class CreateCita extends StatefulWidget {
@@ -47,10 +49,18 @@ class _CreateCitaState extends State<CreateCita> {
               );
             }).toList(),
             onChanged: (newVal) {
-              setState(() {
-                especialidadId = newVal;
-              });
-              medicosItems();
+              if (especialidades
+                  .any((item) => item['id'].toString() == newVal)) {
+                setState(() {
+                  especialidadId = newVal;
+                  medicoId = null;
+                });
+                medicosItems();
+              } else {
+                setState(() {
+                  especialidadId = null;
+                });
+              }
             },
             value: especialidadId,
           ),
@@ -71,9 +81,15 @@ class _CreateCitaState extends State<CreateCita> {
               );
             }).toList(),
             onChanged: (newVal) {
-              setState(() {
-                medicoId = newVal;
-              });
+              if (medicos.any((item) => item['id'].toString() == newVal)) {
+                setState(() {
+                  medicoId = newVal;
+                });
+              } else {
+                setState(() {
+                  medicoId = null;
+                });
+              }
             },
             value: medicoId,
           ),
@@ -81,27 +97,67 @@ class _CreateCitaState extends State<CreateCita> {
             height: 20,
           ),
           TextFormField(
-            controller: fecha,
-            decoration: const InputDecoration(
-                icon: Icon(Icons.person),
-                labelText: 'Fecha',
-                border: OutlineInputBorder()),
-          ),
+              controller: fecha,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.calendar_today),
+                  labelText: 'Fecha'),
+              readOnly: true,
+              onTap: () async {
+                DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2101));
+
+                if (pickedDate != null) {
+                  String formattedDate =
+                      DateFormat('yyyy-MM-dd').format(pickedDate);
+
+                  setState(() {
+                    fecha.text = formattedDate;
+                  });
+                } else {}
+              }),
           const SizedBox(
             height: 20,
           ),
           TextFormField(
             controller: hora,
             decoration: const InputDecoration(
-                icon: Icon(Icons.person),
-                labelText: 'Hora',
-                border: OutlineInputBorder()),
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.timer),
+                labelText: "Hora"),
+            readOnly: true,
+            onTap: () async {
+              TimeOfDay? pickedTime = await showTimePicker(
+                initialTime: TimeOfDay.now(),
+                context: context,
+              );
+
+              if (pickedTime != null) {
+                DateTime parsedTime = DateFormat.Hm()
+                    .parse(pickedTime.format(context).toString());
+
+                String formattedDateTime =
+                    DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(DateTime.now());
+
+                setState(() {
+                  hora.text = formattedDateTime;
+                });
+              }
+            },
           )
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           createCita(fecha.text, hora.text, widget.pacienteId, medicoId);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyHomePage(title: 'CEDIMAT')),
+          );
           Navigator.pop(context);
         },
         child: const Icon(Icons.check),

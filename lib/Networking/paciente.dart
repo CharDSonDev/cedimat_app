@@ -103,3 +103,11 @@ Future<Paciente> deleteAlbum(int id) async {
     throw Exception('Failed to delete album.');
   }
 }
+Future deletePaciente(int id) async {
+  final http.Response response = await http.delete(
+    Uri.parse('https://localhost:7002/api/paciente/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+}

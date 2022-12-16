@@ -36,6 +36,37 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalles de la cita'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () async {
+              bool? confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Eliminar cita'),
+                    content: const Text(
+                        '¿Estás seguro de que quieres eliminar esta cita?'),
+                    actions: [
+                      TextButton(
+                        child: const Text('No'),
+                        onPressed: () => Navigator.pop(context, false),
+                      ),
+                      TextButton(
+                        child: const Text('Sí'),
+                        onPressed: () => Navigator.pop(context, true),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirm != null) {
+                deleteCita(widget.citaId);
+              }
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Cita>>(
         future: fetchCitas(),

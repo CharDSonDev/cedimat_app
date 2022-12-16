@@ -46,3 +46,12 @@ Future<Cita> createCita(
     throw Exception('Failed to create album.');
   }
 }
+
+Future deleteCita(int id) async {
+  final http.Response response = await http.delete(
+    Uri.parse('https://localhost:7002/api/cita/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+}
