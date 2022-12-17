@@ -104,10 +104,13 @@ class _CreateCitaState extends State<CreateCita> {
                   labelText: 'Fecha'),
               readOnly: true,
               onTap: () async {
+                // Obtener la fecha actual
+                DateTime hoy = DateTime.now();
+                // Mostrar el selector de fechas con la fecha actual como fecha inicial
                 DateTime? pickedDate = await showDatePicker(
                     context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
+                    initialDate: hoy,
+                    firstDate: hoy, // La primera fecha disponible es hoy
                     lastDate: DateTime(2101));
 
                 if (pickedDate != null) {
@@ -136,14 +139,14 @@ class _CreateCitaState extends State<CreateCita> {
               );
 
               if (pickedTime != null) {
-                DateTime parsedTime = DateFormat.Hm()
-                    .parse(pickedTime.format(context).toString());
-
-                String formattedDateTime =
-                    DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(DateTime.now());
+                DateTime now = DateTime.now();
+                DateTime selectedTime = DateTime(now.year, now.month, now.day,
+                    pickedTime.hour, pickedTime.minute);
+                String formattedTime = DateFormat.jm().format(
+                    selectedTime); // formatea la hora seleccionada como "hh:mm AM/PM"
 
                 setState(() {
-                  hora.text = formattedDateTime;
+                  hora.text = formattedTime;
                 });
               }
             },
@@ -152,12 +155,17 @@ class _CreateCitaState extends State<CreateCita> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          createCita(fecha.text, hora.text, widget.pacienteId, medicoId);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyHomePage(title: 'CEDIMAT')),
-          );
+          DateTime now = DateTime.now();
+          DateTime selectedTime = DateTime(
+              now.year,
+              now.month,
+              now.day,
+              int.parse(hora.text.substring(0, 2)),
+              int.parse(hora.text.substring(3, 5)));
+          String formattedTime =
+              DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(selectedTime);
+
+          createCita(fecha.text, formattedTime, widget.pacienteId, medicoId);
           Navigator.pop(context);
         },
         child: const Icon(Icons.check),

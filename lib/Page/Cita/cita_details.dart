@@ -63,6 +63,7 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
 
               if (confirm != null) {
                 deleteCita(widget.citaId);
+                Navigator.pop(context);
               }
             },
           ),
@@ -88,12 +89,15 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
                     future: fetchEspecialidades(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        try {
-                          Especialidad especialidad = snapshot.data!.firstWhere(
-                              (especialidad) =>
-                                  especialidad.id == _medico?.especialidadId);
-                          return RichText(
-                            text: TextSpan(
+                        Especialidad especialidad = snapshot.data!.firstWhere(
+                          (especialidad) =>
+                              especialidad.id == _medico?.especialidadId,
+                          orElse: () => Especialidad.empty,
+                        );
+
+                        if (especialidad != null) {
+                          return Text.rich(
+                            TextSpan(
                               style: DefaultTextStyle.of(context)
                                   .style
                                   .copyWith(fontSize: 20),
@@ -106,15 +110,9 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
                               ],
                             ),
                           );
-                        } catch (error) {
-                          return Text(
-                              "Error al obtener la especialidad: $error");
                         }
-                      } else if (snapshot.hasError) {
-                        return Text(
-                            "Error al obtener la especialidad: ${snapshot.error}");
                       }
-                      return const CircularProgressIndicator();
+                      return const LinearProgressIndicator();
                     },
                   ),
                   const SizedBox(
@@ -146,7 +144,7 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
                         return Text(
                             "Error al obtener el médico: ${snapshot.error}");
                       }
-                      return const CircularProgressIndicator();
+                      return const LinearProgressIndicator();
                     },
                   ),
                   const SizedBox(
@@ -178,7 +176,7 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
                         return Text(
                             "Error al obtener el paciente: ${snapshot.error}");
                       }
-                      return const CircularProgressIndicator();
+                      return const LinearProgressIndicator();
                     },
                   ),
                   const SizedBox(
@@ -219,7 +217,7 @@ class _CitaDetailsScreenState extends State<CitaDetailsScreen> {
           } else if (snapshot.hasError) {
             return Text("Error al obtener la cita: ${snapshot.error}");
           }
-          return const CircularProgressIndicator();
+          return const LinearProgressIndicator();
         },
       ),
     );

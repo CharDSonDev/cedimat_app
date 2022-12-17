@@ -48,7 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
-          return const CircularProgressIndicator();
+          return const SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
