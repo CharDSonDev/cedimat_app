@@ -1,5 +1,3 @@
-# CEDIMAT APP
-
 # Screenshots
 
 ![image](https://user-images.githubusercontent.com/36754778/209487014-6b7b2e40-9325-4389-b90b-a5a89c054f74.png)
